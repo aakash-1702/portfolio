@@ -4,19 +4,14 @@ export const cpStats: CPStats = {
   leetcode: {
     rating: 1868,
     solved: 400,
-    profile: "https://leetcode.com/akash",
+    profile: "https://leetcode.com/u/AshenCold/",
     percentile: "Top 5%",
   },
-  codeforces: {
-    rating: 1450,
-    maxRating: 1500,
-    profile: "https://codeforces.com/profile/akash",
-    percentile: "Top 15%",
-  },
+  
   codechef: {
     stars: 2,
-    rating: 1500,
-    profile: "https://codechef.com/users/akash",
+    rating: 1420,
+    profile: "https://www.codechef.com/users/im_aakash49",
   },
   guardian: {
     current: 1868,

@@ -1,6 +1,6 @@
-import type { ProjectData } from "@/lib/types";
+import { prisma } from "../lib/prisma";
 
-export const projects: ProjectData[] = [
+const projects = [
   {
     slug: "basecase",
     title: "BaseCase",
@@ -45,3 +45,16 @@ export const projects: ProjectData[] = [
     status: "active",
   },
 ];
+
+export async function seedProjects() {
+  console.log("  📦 Seeding projects...");
+
+  // Clear all existing projects first
+  await prisma.project.deleteMany();
+
+  for (const project of projects) {
+    await prisma.project.create({ data: project });
+  }
+
+  console.log(`  ✓ ${projects.length} projects seeded`);
+}

@@ -80,7 +80,7 @@ export function CPSnapshot() {
           >
             <div className="flex justify-between items-start">
               <p className="font-mono text-[10px] uppercase tracking-widest text-[#666]">
-                Codeforces
+                Codechef
               </p>
               <ArrowUpRight
                 size={14}

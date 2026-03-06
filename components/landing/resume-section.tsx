@@ -29,7 +29,7 @@ export function ResumeSection() {
 
         <div className="flex flex-col items-start sm:items-end gap-3">
           <a
-            href="/resume/demo-resume.pdf"
+            href="/AkashResume.pdf"
             download
             className="inline-block bg-[#c4a482] text-black px-4 py-2 rounded-md font-medium hover:opacity-95"
           >

@@ -12,3 +12,86 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// ─── Blog ────────────────────────────────────────────────────────────────────
+
+model BlogPost {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  description   String
+  date          String // ISO-8601 date string (YYYY-MM-DD)
+  category      String
+  tags          String[]
+  featured      Boolean  @default(false)
+  draft         Boolean  @default(false)
+  readingTime   Int      @default(1)
+  content       String   @default("")
+  contentFormat String   @default("mdx")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("blog_posts")
+}
+
+// ─── Projects ────────────────────────────────────────────────────────────────
+
+model Project {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  description     String
+  longDescription String   @default("")
+  impact          String?
+  stack           String[]
+  demoUrl         String?
+  githubUrl       String?
+  featured        Boolean  @default(false)
+  status          String   @default("active") // active | archived | wip
+  content         String?
+  contentFormat   String   @default("mdx")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("projects")
+}
+
+// ─── Competitive Programming Stats ───────────────────────────────────────────
+// Single-row table storing the CP stats as a JSON blob
+
+model CPStats {
+  id          String   @id @default(cuid())
+  leetcode    Json // { rating, solved, profile, percentile }
+  codeforces  Json? // { rating, maxRating, profile, percentile }
+  codechef    Json // { stars, rating, profile }
+  guardian    Json // { current, target }
+  lastUpdated String // ISO-8601 date string
+  updatedAt   DateTime @updatedAt
+
+  @@map("cp_stats")
+}
+
+// ─── Timeline ────────────────────────────────────────────────────────────────
+
+model TimelineEvent {
+  id          String @id @default(cuid())
+  year        String
+  title       String
+  description String
+  type        String // education | project | achievement
+  order       Int    @default(0) // for stable ordering
+
+  @@map("timeline_events")
+}
+
+// ─── Contact Messages ────────────────────────────────────────────────────────
+
+model ContactMessage {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  message    String
+  receivedAt DateTime @default(now())
+
+  @@map("contact_messages")
+}

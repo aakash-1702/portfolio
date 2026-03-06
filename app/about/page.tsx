@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/fade-in";
+import { FileDown } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About",
@@ -33,10 +34,19 @@ export default function AboutPage() {
             <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight-custom text-white mb-4">
               The person behind the code
             </h1>
-            <p className="text-lg text-[#aaa] max-w-xl leading-relaxed">
+            <p className="text-lg text-[#aaa] max-w-xl leading-relaxed mb-6">
               Debuggers over debug logs. Data integrity over optimistic UI.
               I build things to last.
             </p>
+            <a
+              href="/AkashResume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#c4a482]/30 bg-[#c4a482]/5 text-[#c4a482] text-sm font-medium hover:bg-[#c4a482]/10 hover:border-[#c4a482]/50 transition-all duration-300"
+            >
+              <FileDown size={16} />
+              Download Resume
+            </a>
           </header>
         </StaggerItem>
 

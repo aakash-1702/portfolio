@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/constants";
-import { Github, Linkedin, Mail, ArrowUpRight } from "lucide-react";
+import { Twitter, Linkedin, Mail, ArrowUpRight } from "lucide-react";
 import { StaggerContainer, StaggerItem } from "@/components/ui/fade-in";
 
 export const metadata: Metadata = {
@@ -17,16 +17,16 @@ const links = [
     accent: "group-hover:text-rose-400",
   },
   {
-    label: "GitHub",
-    href: SITE_CONFIG.github,
-    value: "github.com/akash",
-    icon: Github,
+    label: "X (Twitter)",
+    href: "https://x.com/im_aakash49",
+    value: "x.com/im_aakash49",
+    icon: Twitter,
     accent: "group-hover:text-[#c4a482]",
   },
   {
     label: "LinkedIn",
     href: SITE_CONFIG.linkedin,
-    value: "linkedin.com/in/akash",
+    value: "linkedin.com/in/aakash49",
     icon: Linkedin,
     accent: "group-hover:text-blue-400",
   },
