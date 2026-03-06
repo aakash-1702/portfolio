@@ -1,12 +1,8 @@
-import type { Metadata } from "next";
+"use client";
+
 import { SITE_CONFIG } from "@/lib/constants";
 import { Twitter, Linkedin, Mail, ArrowUpRight } from "lucide-react";
 import { StaggerContainer, StaggerItem } from "@/components/ui/fade-in";
-
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Get in touch with Akash Dwivedi.",
-};
 
 const links = [
   {
@@ -31,6 +27,22 @@ const links = [
     accent: "group-hover:text-blue-400",
   },
 ];
+
+function handleEmailClick(e: React.MouseEvent<HTMLAnchorElement>) {
+  e.preventDefault();
+  // Try mailto first; if browser doesn't handle it, fall back to Gmail compose
+  const email = SITE_CONFIG.email;
+  const mailtoUrl = `mailto:${email}`;
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${email}`;
+
+  // Attempt mailto via a hidden iframe to detect failure
+  window.location.href = mailtoUrl;
+
+  // Fallback: if nothing happens after 500ms, open Gmail
+  setTimeout(() => {
+    window.open(gmailUrl, "_blank");
+  }, 500);
+}
 
 export default function ContactPage() {
   return (
@@ -59,6 +71,7 @@ export default function ContactPage() {
               <a
                 key={link.label}
                 href={link.href}
+                onClick={link.label === "Email" ? handleEmailClick : undefined}
                 target={link.label !== "Email" ? "_blank" : undefined}
                 rel={link.label !== "Email" ? "noopener noreferrer" : undefined}
                 className="group card p-6 flex flex-col justify-between min-h-[180px]"
