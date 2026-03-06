@@ -17,7 +17,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/20 mb-8">
             <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse" />
             <span className="text-[12px] font-medium text-emerald-400/90">
-              Open to SWE / Backend roles · 2025
+              Open to SWE / Full Stack / Agentic-Ai / Gen-Ai roles · 2026
             </span>
           </div>
         </StaggerItem>
