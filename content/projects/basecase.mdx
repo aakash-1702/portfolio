@@ -4,17 +4,18 @@ title: "BaseCase — Deep Dive"
 
 ## Problem Definition
 
-Most DSA practice trackers are flat lists. They don't model the hierarchical structure of how engineers actually study: organized sheets, grouped by topic sections, with individual problem-level tracking.
+Most interview prep tools are either too simple (a spreadsheet of problems) or too scattered (dozens of tabs, no continuity). And none of them simulate the actual experience of being interviewed.
 
-BaseCase solves this by treating DSA practice as a **relational data problem**.
+BaseCase solves two distinct problems: **making DSA practice structured and retention-focused**, and **simulating real interview pressure through a live AI voice agent**.
 
 ## Architecture Overview
 
-The system follows a standard full-stack architecture:
+The system follows a full-stack architecture built on Next.js App Router:
 
 - **Frontend**: Next.js App Router with React Server Components
 - **Backend**: Next.js API routes with Prisma ORM
 - **Database**: PostgreSQL (hosted on Neon)
+- **Session store**: Redis (conversation history for the voice agent)
 - **Deployment**: Vercel
 
 ```
@@ -35,46 +36,28 @@ The system follows a standard full-stack architecture:
          └─────────────────┘
 ```
 
-## Data Modeling
+## Feature 1 — Structured DSA Practice
 
-The core schema follows a strict hierarchy:
+The DSA layer treats practice as a **relational data problem**. The hierarchy is:
 
 ### Sheet → Section → Problem
 
-- A **Sheet** represents a study plan (e.g., "Striver's SDE Sheet")
-- A **Section** groups problems by topic (e.g., "Arrays", "Dynamic Programming")
-- A **Problem** is an individual DSA problem with status tracking
+- A **Sheet** is a complete study track (e.g., "Striver's SDE Sheet")
+- A **Section** groups problems by technique (e.g., "Two Pointers", "Dynamic Programming")
+- A **Problem** is an individual DSA problem with status and confidence tracking
 
-This relational design ensures:
-
-1. **No orphaned data** — foreign keys enforce hierarchy
-2. **Efficient reads** — query any level of the hierarchy independently
-3. **Atomic writes** — nested transactions for bulk operations
-
-## Nested Transaction Handling
-
-The most complex operation is **bulk status updates**. When marking a section complete:
-
-1. All problems in the section update to "completed"
-2. Section progress recalculates to 100%
-3. Parent sheet progress recalculates
-
-This requires a database transaction to maintain consistency:
+This relational design ensures referential integrity, efficient queries at any level, and atomic bulk updates via nested transactions.
 
 ```typescript
 await prisma.$transaction(async (tx) => {
-  // Step 1: Update all problems
   await tx.problem.updateMany({
     where: { sectionId },
     data: { status: "completed" },
   });
-
-  // Step 2: Recalculate section
   const [total, done] = await Promise.all([
     tx.problem.count({ where: { sectionId } }),
     tx.problem.count({ where: { sectionId, status: "completed" } }),
   ]);
-
   await tx.section.update({
     where: { id: sectionId },
     data: { progress: done / total },
@@ -82,22 +65,57 @@ await prisma.$transaction(async (tx) => {
 });
 ```
 
+## Feature 2 — SM-2 Spaced Repetition
+
+BaseCase uses an **SM-2 inspired revision engine** to decide when to resurface previously solved problems. Each problem gets a review interval adjusted by confidence rating.
+
+- **High confidence** → interval expands faster
+- **Medium confidence** → interval grows moderately
+- **Low confidence** → interval resets for near-term revision
+
+This directly fights the _"I solved it once but can't solve it again"_ problem that costs candidates in real interviews.
+
+## Feature 3 — AI Mock Interviewer (Voice Agent)
+
+The centerpiece of BaseCase is a **real-time AI voice interviewer** built from first principles — no third-party voice platforms.
+
+The pipeline:
+
+```
+User speaks → STT (Web Speech API) → transcript
+      → PATCH /api/interview/:id/answer
+          → full conversation history sent to AI model
+          → AI generates { message, isComplete }
+          → TTS converts response to base64 audio
+          → response returned to client
+      → client plays audio
+      → mic unlocks for next turn
+```
+
+**State machine:** The client enforces a strict phase transition model — `loading` → `speaking` → `answering` → `recording` → `submitting` — preventing invalid states like the mic being active while AI audio is playing.
+
+**Conversation memory:** A flat array of alternating strings stored in Redis. Even indices are AI messages, odd indices are user messages. The full array is sent with every request, reconstructing the conversation context for the model on each turn.
+
+**Browser compatibility:** The Web Speech API works in Chrome and Edge; Firefox and Brave require graceful fallback to text input.
+
+## Latency Architecture
+
+The sequential prototype has a 2.5–6 second silence per turn (STT + inference + TTS + network). The path to closing that gap:
+
+1. **Stream the AI response** — begin TTS at the first complete sentence (60–70% latency reduction)
+2. **Persistent WebSocket** — eliminate per-request connection overhead
+3. **Parallel TTS** — pipeline TTS sentence-by-sentence while AI is still generating
+4. **Edge deployment** — reduce geographic round-trip for AI + TTS calls
+
 ## State Synchronization
 
-The frontend uses optimistic updates for responsiveness:
-
-1. User clicks "Mark Complete"
-2. UI immediately reflects the change
-3. API call fires in background
-4. On failure: UI reverts, error toast shown
-
-This pattern avoids blocking the UI on network latency while maintaining data integrity.
+The frontend uses optimistic updates for DSA progress: UI reflects the change immediately, API fires in the background, and on failure the UI reverts with an error toast.
 
 ## Scaling Considerations
 
-- **Query optimization**: Added composite indices on `(sectionId, status)` for progress calculations
+- **Query optimization**: Composite indices on `(sectionId, status)` for progress calculations
 - **Connection pooling**: Prisma Accelerate for serverless connection management
-- **Caching strategy**: Static generation for sheet listings, dynamic for progress data
+- **Caching strategy**: Static generation for sheet listings, dynamic for progress and interview data
 - **Future**: Migrate to ISR when user count grows beyond single-user scope
 
 ## Lessons Learned
