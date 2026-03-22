@@ -5,12 +5,21 @@ export const projects: ProjectData[] = [
     slug: "basecase",
     title: "BaseCase",
     description:
-      "A modern developer portfolio and technical writing platform built to showcase engineering projects, backend systems, and long-form technical content.",
+      "An AI-powered mock interview platform with a real-time voice agent — candidates speak to an AI interviewer that listens, reasons, and responds just like a real interview.",
     longDescription:
-      "BaseCase is a full-featured portfolio platform purpose-built for developers who want to present their engineering work with clarity. It combines a structured project showcase with a technical blog engine, allowing visitors to explore real-world projects, understand architectural decisions, and follow engineering learnings. Built with a modular component architecture on Next.js, the platform is optimized for readability, SEO, and easy extensibility — serving as a central hub for backend engineering projects, development experiments, and technical insights.",
+      "BaseCase is a full-stack interview preparation platform built around one core belief: great interview performance comes from structured repetition, pattern recognition, and timely guidance. At its center is a live AI Mock Interviewer — a real-time voice pipeline where candidates speak naturally and an AI interviewer responds with follow-up questions, probing deeper into their reasoning. The voice layer is built from first principles: browser-based STT via the Web Speech API, a stateful conversation history sent to the AI model on every turn, TTS conversion of the AI response, and a strict client-side state machine (loading → speaking → answering → recording → submitting) that enforces the sequential nature of voice interaction. Beyond the voice agent, BaseCase offers curated DSA sheets, an AI Mentor for problem-solving guidance, and an SM-2 inspired spaced repetition engine that surfaces the right problems at the right time — turning prep from aimless grinding into a repeatable system.",
     impact:
-      "Live production platform · SEO-optimized technical writing · Modular architecture for easy extension",
-    stack: ["Next.js", "React", "TypeScript", "TailwindCSS", "Vercel"],
+      "Live AI voice interviewer · Real-time STT/TTS pipeline · SM-2 spaced repetition engine · AI Mentor guidance",
+    stack: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "TailwindCSS",
+      "PostgreSQL",
+      "Prisma",
+      "Redis",
+      "Vercel",
+    ],
     demoUrl: "https://basecase-xi.vercel.app/",
     githubUrl: "https://github.com/aakash-1702/basecase",
     featured: true,
